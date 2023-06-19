@@ -1,7 +1,7 @@
 # LinkedIn Jobs Notifier
 LinkedIn Jobs scraper with a Discord bot "front end" written in Python
 
-<img width="593" alt="image" src="https://github.com/hotsno/linkedin-scraper/assets/71658949/cb4cf00c-0700-4793-8a08-9f13a42374ed">
+<img width="596" alt="image" src="https://github.com/hotsno/linkedin-jobs-notifier/assets/71658949/231d1819-56fb-459b-9658-ebd5b33e29cd">
 
 ## Features
 - Sends new postings on LinkedIn Jobs for a given search query to a Discord channel
