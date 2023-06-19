@@ -1,10 +1,26 @@
-# LinkedIn Jobs Scraper
-A quick scraper I made using Selenium and Discord.py that sends new postings on LinkedIn Jobs for a given search query to a Discord channel. 
-I decided to make this after being annoyed at all of the sponsored posts, repeat postings, and also just wanted a better viewing and user
-experience. Also supports blacklisting companies through a bot command.
+# LinkedIn Jobs Notifier
+LinkedIn Jobs scraper with a Discord bot "front end" written in Python
 
-I threw this together in under a day and haven't touched it since so the code quality is terrible and it probably doesn't work out of the box.
+<img width="593" alt="image" src="https://github.com/hotsno/linkedin-scraper/assets/71658949/cb4cf00c-0700-4793-8a08-9f13a42374ed">
 
-## Screenshot
-![image](https://user-images.githubusercontent.com/71658949/197030903-d53c0e83-caf1-4862-b8e3-fa63824ce2b9.png)
+## Features
+- Sends new postings on LinkedIn Jobs for a given search query to a Discord channel
+- Saves users time from repeat and sponsored postings
+- Allows users to blacklist companies
+- Provides links to a Google and [Levels.fyi](https://levels.fyi) search of the company
 
+## Requirements
+- Python >=3.10
+- Git
+- Chrome (or Chromium)
+
+## Usage
+> **Note**
+> If the commands don't work, try `python3` and `pip3` instead, or [make sure you have them in your PATH](https://chat.openai.com/share/3bdc1325-2634-4e5b-9609-a24980c779df)
+
+1. `git clone https://github.com/hotsno/linkedin-jobs-notifier`
+2. `cd linkedin-jobs-notifier`
+3. `pip install -r requirements.txt`
+4. Log in to your LinkedIn account: `python log_in_to_linkedin.py`
+5. Edit `.env.example`
+6. Run the bot: `python bot.py`
