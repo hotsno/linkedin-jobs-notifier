@@ -3,7 +3,19 @@ import scraper
 import os, sys, json
 import urllib.parse
 import datetime
+from dotenv import load_dotenv
 import json
+
+load_dotenv()
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+NEW_POSTINGS_CHANNEL_ID = int(os.getenv('NEW_POSTINGS_CHANNEL_ID'))
+TESTING_CHANNEL_ID = int(os.getenv('TESTING_CHANNEL_ID'))
+COMPANIES_CHANNEL_ID = int(os.getenv('COMPANIES_CHANNEL_ID'))
+
+# Instantiated after bot is logged in
+NEW_POSTINGS_CHANNEL = None
+TESTING_CHANNEL = None
+COMPANIES_CHANNEL = None
 
 intents = discord.Intents.default()
 intents.members = True
@@ -15,6 +27,12 @@ bot = discord.Client(intents=intents)
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
+
+    global NEW_POSTINGS_CHANNEL, TESTING_CHANNEL, COMPANIES_CHANNEL
+    NEW_POSTINGS_CHANNEL = bot.get_channel(NEW_POSTINGS_CHANNEL_ID)
+    TESTING_CHANNEL = bot.get_channel(TESTING_CHANNEL_ID)
+    COMPANIES_CHANNEL = bot.get_channel(COMPANIES_CHANNEL_ID)
+
     await get_new_roles_postings_task()
 
 @bot.event
@@ -36,7 +54,7 @@ async def on_message(message):
 
         config["blacklist"] = list(blacklist)
         save_config(config)
-        get_companies_channel().send(s)
+        COMPANIES_CHANNEL.send(s)
 
     def remove_from_blacklist(companies):
         config = get_config()
@@ -55,7 +73,7 @@ async def on_message(message):
 
         config["blacklist"] = list(blacklist)
         save_config(config)
-        get_companies_channel().send(s)
+        COMPANIES_CHANNEL.send(s)
 
     if message.author.bot:
         return
@@ -69,52 +87,57 @@ async def on_message(message):
 
 async def get_new_roles_postings_task():
     async def send_new_roles():
-        async def send_companies(companies):
-            s = ""
+        async def send_companies_list(companies):
+            companies_list_string = ""
             for company in companies:
-                s += company + "\n"
-            await get_companies_channel().send(s)
+                companies_list_string += company + "\n"
+            await COMPANIES_CHANNEL.send(companies_list_string)
 
-        def levels_url(company):
+        def get_levels_url(company):
             base = "https://www.levels.fyi/internships/?track=Software%20Engineer&timeframe=2023%20%2F%202022&search="
             return base + urllib.parse.quote_plus(company)
 
-        def google_url(company):
+        def get_google_url(company):
             base = "https://www.google.com/search?q="
             return base + urllib.parse.quote_plus(company)
 
         config = get_config()
-        posted = set(config["posted"])
+        posted = set(config["posted"]) # TODO: Move "posted" into a separate JSON file
         blacklist = set(config["blacklist"])
+
         roles = scraper.get_recent_roles()
+
         companies = set()
         for role in roles:
             company, title, link, picture = role
+
             company_and_title = company + " - " + title
             if company_and_title in posted or company in blacklist:
                 continue
+
             companies.add(company)
             config["posted"].append(company_and_title)
             posted.add(company_and_title)
+
             embed = discord.Embed(title=title, url=link, color=discord.Color.from_str("#378CCF"), timestamp=datetime.datetime.now())
-            embed.set_author(name=company, url=google_url(company))
-            embed.add_field(name="Levels.fyi Link", value=f"[{company} at Levels.fyi]({levels_url(company)})")
+            embed.set_author(name=company, url=get_google_url(company))
+            embed.add_field(name="Levels.fyi Link", value=f"[{company} at Levels.fyi]({get_levels_url(company)})")
             embed.set_footer(text="Made by hotsno#0001")
             embed.set_thumbnail(url=picture)
-            await get_new_postings_channel().send(embed=embed)
+            await NEW_POSTINGS_CHANNEL.send(embed=embed)
+        
+        await send_companies_list(companies)
         save_config(config)
-        await send_companies(companies)
 
     while True:
         try:
-            await get_testing_channel().send('Trying to get new roles...')
+            await TESTING_CHANNEL.send('Trying to get new roles...')
             await send_new_roles()
-            await get_testing_channel().send('Succeeded. Waiting 20 minutes.')
-            await asyncio.sleep(1200)
+            await TESTING_CHANNEL.send('Succeeded. Waiting 20 minutes.')
         except Exception as e:
-            await get_testing_channel().send('Failed. Waiting 20 minutes.')
+            await TESTING_CHANNEL.send('Failed. Waiting 20 minutes.')
             print(e)
-            await asyncio.sleep(1200)
+        await asyncio.sleep(60 * 20)
 
 def get_config():
     with open(os.path.join(sys.path[0], 'config.json')) as f:
@@ -127,15 +150,5 @@ def save_config(config):
         json.dump(config, f, indent=4)
         f.truncate()
 
-# Currently hardcoded...
-async def get_new_postings_channel():
-    return bot.get_channel(1020861126751289374)
 
-async def get_testing_channel():
-    return bot.get_channel(1020848013163380786)
-
-async def get_companies_channel():
-    return bot.get_channel(1020861103896547389)
-
-with open('config.json', 'r') as f:
-    bot.run(json.load(f)['token'])
+bot.run(BOT_TOKEN)
