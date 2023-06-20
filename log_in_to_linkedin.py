@@ -14,3 +14,4 @@ driver = webdriver.Chrome(options=options, service=ChromeService(executable_path
 
 driver.get("https://www.linkedin.com/login")
 input("Press enter when done")
+driver.quit()
