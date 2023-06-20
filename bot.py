@@ -78,11 +78,11 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if message.content.splitlines[0] == "!blacklist":
-        add_to_blacklist(message.content.splitlines[1:])
+    if message.content.splitlines()[0] == "!blacklist":
+        add_to_blacklist(message.content.splitlines()[1:])
 
-    elif message.content.splitlines[0] == "!unblacklist":
-        remove_from_blacklist(message.content.splitlines[1:])
+    elif message.content.splitlines()[0] == "!unblacklist":
+        remove_from_blacklist(message.content.splitlines()[1:])
 
 
 async def get_new_roles_postings_task():
