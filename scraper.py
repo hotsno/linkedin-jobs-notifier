@@ -32,13 +32,17 @@ def get_recent_roles():
     roles = []
     positions = driver.find_elements(By.CSS_SELECTOR, ".job-card-container")
     for position in positions:
+        promoted = position.find_element(By.CSS_SELECTOR, ".job-card-container__footer-item").text
+        if promoted == "Promoted":
+            continue
+
         company = position.find_element(By.CSS_SELECTOR, ".job-card-container__primary-description").text
         link = position.find_element(By.CSS_SELECTOR, "a.job-card-list__title").get_attribute('href').split('?eBP')[0]
         title = position.find_element(By.CSS_SELECTOR, "a.job-card-list__title").text
         picture = position.find_element(By.CSS_SELECTOR, "img.ember-view").get_attribute('src')
         roles.append((company, title, link, picture))
 
-    driver.quit()
+    # driver.quit()
     return roles
 
 if __name__ == "__main__":
