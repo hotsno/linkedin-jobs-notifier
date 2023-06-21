@@ -9,7 +9,7 @@ import json
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 NEW_POSTINGS_CHANNEL_ID = int(os.getenv('NEW_POSTINGS_CHANNEL_ID'))
-DEBUG_CHANNEL_ID = int(os.getenv('TESTING_CHANNEL_ID'))
+DEBUG_CHANNEL_ID = int(os.getenv('DEBUG_CHANNEL_ID'))
 COMPANIES_CHANNEL_ID = int(os.getenv('COMPANIES_CHANNEL_ID'))
 
 # Instantiated after bot is logged in
