@@ -42,7 +42,7 @@ def get_recent_roles():
         picture = position.find_element(By.CSS_SELECTOR, "img.ember-view").get_attribute('src')
         roles.append((company, title, link, picture))
 
-    # driver.quit()
+    driver.quit()
     return roles
 
 if __name__ == "__main__":
